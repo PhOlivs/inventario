@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventário do Jogador</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f4f4f4;
+    }
+    h2 {
+      margin-bottom: 20px;
+    }
+    .inventory {
+      display: grid;
+      grid-template-columns: repeat(5, 100px);
+      gap: 10px;
+    }
+    .slot {
+      width: 100px;
+      height: 100px;
+      background-color: #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      cursor: pointer;
+    }
+    .slot img {
+      max-width: 90%;
+      max-height: 90%;
+    }
+    .input-slot {
+      display: none;
+    }
+    .remove-btn {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      background: red;
+      color: white;
+      border: none;
+      font-size: 12px;
+      border-radius: 50%;
+      cursor: pointer;
+      width: 18px;
+      height: 18px;
+      display: none;
+      z-index: 1;
+    }
+    .slot:hover .remove-btn {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Inventário do Jogador</h2>
+  <div class="inventory" id="inventory"></div>
+
+  <script>
+    const inventory = document.getElementById("inventory");
+
+    // Criar 20 slots dinamicamente
+    for (let i = 0; i < 20; i++) {
+      const slot = document.createElement("div");
+      slot.className = "slot";
+      slot.onclick = () => selectSlot(slot);
+
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
+      input.className = "input-slot";
+      input.onchange = function () { loadImage(this); };
+
+      const removeBtn = document.createElement("button");
+      removeBtn.className = "remove-btn";
+      removeBtn.textContent = "×";
+      removeBtn.onclick = function (e) { removeImage(e, this); };
+
+      slot.appendChild(input);
+      slot.appendChild(removeBtn);
+      inventory.appendChild(slot);
+    }
+
+    function selectSlot(slot) {
+      const input = slot.querySelector(".input-slot");
+      input.click();
+    }
+
+    function loadImage(input) {
+      const file = input.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const slot = input.parentElement;
+        let img = slot.querySelector("img");
+
+        if (!img) {
+          img = document.createElement("img");
+          slot.appendChild(img);
+        }
+
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removeImage(event, btn) {
+      event.stopPropagation();
+      const slot = btn.parentElement;
+      const img = slot.querySelector("img");
+      const input = slot.querySelector(".input-slot");
+      if (img) {
+        img.remove();
+        input.value = "";
+      }
+    }
+  </script>
+
+</body>
+</html>
